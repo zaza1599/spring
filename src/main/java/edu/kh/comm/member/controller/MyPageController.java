@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import edu.kh.comm.member.model.service.MyPageService;
@@ -173,11 +174,11 @@ public class MyPageController {
 			
 			if(result > 0) {
 				message = "비밀번호가 수정되었습니다 ^^.";
-				path = "redircet:info";
+				path = "info";
 				
 			} else {
 				message = "비밀번호 수정 실패...ㅠㅠ";
-				path = "redirect:changePw";
+				path = "changePw";
 			}
 			
 			ra.addFlashAttribute("message", message);
@@ -223,6 +224,41 @@ public class MyPageController {
 			
 			return "redirect:" + path ;
 			
+		}
+		
+		
+		// 프로필 수정
+		@PostMapping("/profile")
+		public String updateProfile(@ModelAttribute("loginMember")  Member loginMember,
+									@RequestParam("uploadImage") MultipartFile uploadImage,/* 업로드 파일 */
+									@RequestParam Map<String, Object> map, /* delete만 담겨져있음 */
+									HttpServletRequest req,
+									RedirectAttributes ra) {
+			
+			// 경로 작성하기
+			
+			// 1) 웹 접근 경로 ( /comm/resources/images/memberProfile/)
+			String webPath = "/resources/images/memberProfile/";
+			
+			// 2) 서버 저장 폴더 경로 ( C:\workspace\7_Framework\comm\src\main\webapp\resources\images\memberProfile )
+			String folderPath = req.getSession().getServletContext().getRealPath(webPath);
+			
+			
+			// map에 경로 2개, 업로드이미지, delete, 회원번호 담기
+			map.put("webPath", webPath);
+			map.put("folderPath", folderPath);
+			map.put("uploadImage", uploadImage);
+			map.put("memberNo", loginMember.getMemberNo() );
+			
+			int result = service.updateProfile(map);
+			
+			
+			
+			
+			
+			
+			
+			return "";
 		}
 		
 		

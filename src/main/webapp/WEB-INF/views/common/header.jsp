@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-    
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"  %>
 <header>
 
 	<!-- 클릭 시 메인페이지로 이동하는 로고 -->
@@ -53,19 +53,24 @@
 	
 </header>
 	
-<!-- 
-	쿼리스트링 : 주소에 담겨져서 전달되는 파라미터를 나타내는 문자열
-	주소?name속성=값&name속성=값
-	/member/login  ?memberEmail=user01&memberPw=1234
- -->
+	
+		<!-- 
+			쿼리스트링 : 주소에 담겨져서 전달되는 파라미터를 나타내는 문자열
+			주소?name속성=값&name속성=값
+			/member/login  ?memberEmail=user01&memberPw=1234
+		 -->
 
 <nav>
     <ul>
-        <li><a href="${contextPath}/board/list?type=1">공지사항</a></li>
+     <%--   // <li><a href="${contextPath}/board/list?type=1">공지사항</a></li>
 
-        <li><a href="${contextPath}/board/list?type=2">자유 게시판</a></li>
+       // <li><a href="${contextPath}/board/list?type=2">자유 게시판</a></li>
 
-        <li><a href="${contextPath}/board/list?type=3">질문 게시판</a></li>
+       // <li><a href="${contextPath}/board/list?type=3">질문 게시판</a></li> --%>
+
+		<c:forEach var="boardType" items="${boardTypeList}">
+			<li><a href="${contextPath}/board/list/${boardType.boardCode}">${boardType.boardName}</a></li>
+		</c:forEach>
 
 
         <li><a href="#">FAQ</a></li>

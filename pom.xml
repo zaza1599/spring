@@ -22,6 +22,10 @@
 		사용자가 직접 받을 필요 없이 해당 태그 내에 지정된 형식으로 작성하면 네트워크를 통해 외부 저장소에서 자동으로 얻어와 세팅함. -->
 	<dependencies>
 	
+	
+	
+	
+	
 	<!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
 		<!-- gson -->
 		<dependency>
@@ -30,6 +34,13 @@
 		    <version>2.9.0</version>
 		</dependency>
 	
+	
+	<!-- https://mvnrepository.com/artifact/commons-fileupload/commons-fileupload -->
+		<dependency>
+		    <groupId>commons-fileupload</groupId>
+		    <artifactId>commons-fileupload</artifactId>
+		    <version>1.4</version>
+		</dependency>
 	
 	
 		<!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-core -->
@@ -197,6 +208,12 @@
 			<scope>runtime</scope>
 		</dependency>
 		
+		<!-- https://mvnrepository.com/artifact/org.lazyluke/log4jdbc-remix -->
+		<dependency>
+		    <groupId>org.lazyluke</groupId>
+		    <artifactId>log4jdbc-remix</artifactId>
+		    <version>0.2.7</version>
+		</dependency>
 		
 
 		<!-- @Inject -->

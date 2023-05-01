@@ -1,5 +1,7 @@
 package edu.kh.comm.member.model.service;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -7,7 +9,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import edu.kh.comm.common.Util;
 import edu.kh.comm.member.controller.MyPageController;
 import edu.kh.comm.member.model.dao.MyPageDAO;
 import edu.kh.comm.member.model.vo.Member;
@@ -74,6 +78,43 @@ public class MyPageServiceImpl implements MyPageService{
 		
 		
 		return 0;
+	}
+
+	// 프로필 이미지 수정 서비스 구현
+	@Override
+	public int updateProfile(Map<String, Object> map)   {
+							// webPath, folderPath, uploadImage, delete(String), memberNo
+		
+		// 자주 쓰는 값 변수에 저장
+		MultipartFile uploadImage = (MultipartFile)map.get("uploadImage");
+		String delete = (String)map.get("delete"); // "0" (변경) / "1"(삭제)
+				
+		// 프로필 이미지 삭제여부를 확인해서 
+		// 삭제가 아닌 경우 (== 새 이미지로 변경) -> 업로드된 파일명 변경
+		// 삭제된 경우 -> NULL 값을 준비 
+		
+		String renameImage =null; // 변경된 파일명 저장 변수
+		if(delete.equals("0")) { // 이미지가 변경된 경우
+			
+			// 파일명 변경
+			// uploadImage.getOriginalFilename() : 원본 파일명
+			renameImage = Util.fileRename( uploadImage.getOriginalFilename() ); 
+			
+			map.put("profileImage", map.get("webPath") + renameImage );
+			
+		} else {
+			
+			map.put("profileImage", null);
+		}
+		
+		// DAO 호출해서 프로필 이미지 수정
+		
+		int result = dao.updateProfile(map);
+		
+		// DB 수정 성공 시 메모리에 임시 저장되어 있는 파일을 서버에 저장
+		
+		
+		return result;
 	}
 	
 	
