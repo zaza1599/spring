@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import edu.kh.comm.board.model.vo.Board;
+import edu.kh.comm.board.model.vo.BoardDetail;
 import edu.kh.comm.board.model.vo.BoardType;
 import edu.kh.comm.board.model.vo.Pagination;
 
@@ -55,5 +56,36 @@ public class BoardDAO {
 		
 		
 		return sqlSession.selectList("boardMapper.selectBoardList", boardCode, rowBounds);
+	}
+
+
+
+	/** 게시글 상세 조회 DAO
+	 * @param boardNo
+	 * @return detail
+	 */
+	public BoardDetail selectBoardDetail(int boardNo) {
+		
+		
+		
+		return sqlSession.selectOne("boardMapper.selectBoardDetail", boardNo);
+	}
+
+
+
+//	public BoardDetail ReadCount(int boardNo) {
+//		// TODO Auto-generated method stub
+//		return sqlSession.selectOne("boardMapper.ReadCount", boardNo);
+//	}
+
+
+
+	/** 조회수 증가 DAO
+	 * @param boardNo
+	 * @return
+	 */
+	public int updateReadCount(int boardNo) {
+		
+		return sqlSession.update("boardMapper.updateReadCount", boardNo);
 	}
 }

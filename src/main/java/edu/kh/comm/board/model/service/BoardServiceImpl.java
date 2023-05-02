@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import edu.kh.comm.board.model.dao.BoardDAO;
 import edu.kh.comm.board.model.vo.Board;
+import edu.kh.comm.board.model.vo.BoardDetail;
 import edu.kh.comm.board.model.vo.BoardType;
 import edu.kh.comm.board.model.vo.Pagination;
 
@@ -46,6 +47,35 @@ public class BoardServiceImpl implements BoardService{
 			
 			return map;
 		}
+
+		// 게시글 상세 조회 서비스 구현
+		@Override
+		public BoardDetail selectBoardDetail(int boardNo) {
+			
+			
+			return dao.selectBoardDetail(boardNo);
+		}
+
+
+//		@Override
+//		public BoardDetail ReadCount(int boardNo) {
+//			
+//			return dao.ReadCount(boardNo);
+//		}
+
+
+		@Override
+		public int updateReadCount(int boardNo) {
+			
+			return dao.updateReadCount(boardNo);
+		}
+
+
+		
+
+
+		
+		
 		
 		
 }

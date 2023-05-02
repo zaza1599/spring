@@ -25,7 +25,6 @@
 	<!-- 별칭 작성 부분 -->
 	<typeAliases>
 		<typeAlias type="edu.kh.comm.member.model.vo.Member" alias="member" />
-		
 		<typeAlias type="edu.kh.comm.board.model.vo.Board"  		alias="board"/>
 		<typeAlias type="edu.kh.comm.board.model.vo.BoardDetail"  	alias="detail"/>
 		<typeAlias type="edu.kh.comm.board.model.vo.BoardImage"  	alias="boardImage"/>
