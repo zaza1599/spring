@@ -1,5 +1,6 @@
 package edu.kh.comm.board.model.controller;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -13,21 +14,32 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import edu.kh.comm.board.model.service.BoardService;
+import edu.kh.comm.board.model.service.ReplyService;
 import edu.kh.comm.board.model.vo.BoardDetail;
+import edu.kh.comm.board.model.vo.Reply;
+import edu.kh.comm.common.Util;
 import edu.kh.comm.member.model.vo.Member;
 
 @Controller
 @RequestMapping("/board")
+@SessionAttributes("loginMember")
 public class BoardController {
 
 	@Autowired
 	private BoardService service;
 	
+	@Autowired
+	private ReplyService replyService;
 	
 	
 	
@@ -47,7 +59,7 @@ public class BoardController {
 		// 3) 게시글 목록 조회
 		
 		
-		
+	
 		Map<String, Object> map = null;
 		
 		map = service.selectBoardList(cp, boardCode);
@@ -113,6 +125,11 @@ public class BoardController {
 		
 		
 		if(detail != null) { // 상세 조회 성공 시
+			
+			//댓글 목록을 조회해서 request scope 추가
+			List<Reply> rList = replyService.selectReplyList(boardNo);
+			model.addAttribute("rList", rList);
+			
 			
 			Member loginMember = (Member)session.getAttribute("loginMember");
 			
@@ -205,10 +222,114 @@ public class BoardController {
 	// 개행문자가 <br> 로 돼있는 상태 => textarea 출력하려면 \n 변경해야함
 	// -> Util.newLineClear() 메서드 사용!
 	
+	//Model 데이터 전달객체
+	@GetMapping("/write/{boardCode}")
+	public String boardWriteForm(@PathVariable("boardCode") int boardCode,
+								String mode,
+								@RequestParam(value="no", required = false, defaultValue= "0") int boardNo,
+								/* insert의 경우 파라미터에 no가 없을 수 있음*/
+								Model model) {
+		if(mode.equals("update")) {
+			
+			// 게시글 상세조회 서비스 호출(boardNo)
+			BoardDetail detail = service.selectBoardDetail(boardNo);
+			// -> 개행문자가 <br>로 되어있는 상태 -> textarea 출력 예정이기 떄문에 \n으로 변경
+			
+			detail.setBoardContent(Util.newLineClear( detail.getBoardContent() ));
+			
+			model.addAttribute("detail", detail);
+			
+			
+			
+		}
+		
+		return "board/boardWriteForm";
+	}
 	
+	@PostMapping("/write/{boardCode}")
+	public String boardWrite( BoardDetail detail //boardTitle, boardContent, boardNo(수정) {
+							, @RequestParam(value="images", required = false) List<MultipartFile> imageList // 업로드파일(이미지) 리스트
+							, @PathVariable("boardCode") int boardCode
+							, String mode
+							, @ModelAttribute("loginMember") Member loginMember
+							, RedirectAttributes ra 
+ 							, HttpServletRequest req
+ 							, @RequestParam(value="cp", required = false, defaultValue ="1") int cp
+ 							, @RequestParam(value="deleteList", required = false) String deleteList) 
+								throws IOException {
 	
+		// 1) 로그인한 회원 번호 얻어와서 detail에 세팅
+		detail.setMemberNo( loginMember.getMemberNo() ); 
+		
+		// 2) 이미지 저장 경로 얻어오기 (webPath, folderPath)
+		String webPath = "/resources/images/board/"; 
+		String folderPath = req.getSession().getServletContext().getRealPath(webPath);
 	
-	
+		// 3) 삽입 or 수정
+		if(mode.equals("insert")) { // 삽입
+			
+			// 게시글 부분 삽입 (제목, 내용, 회원번호, 게시판코드)
+			// -> 삽입된 게시글의 번호(boardNo) 반환 (왜? 삽입이 끝나면 게시글 상세조회로 리다이렉트)
+			
+			// 게시글에 포함된 이미지 정보 삽입(0~5개, 게시글 번호 필요)
+			// -> 실제 파일로 변환해서 서버에 저장( transFer() )
+			
+			// 두 번의 insert 중 한 번이라도 실패하면 전체 rollback (트랜잭션 처리)
+			
+			int boardNo = service.insertBoard(detail, imageList, webPath, folderPath);
+			
+			String path = null;
+			String message = null;
+			
+			if(boardNo > 0) {
+				// /board/write/1
+				// /board/detail/1/1500
+				
+				path = "../detail/" + boardCode + "/" + boardNo;
+				message = "게시글이 삽입되었습니다.";
+				
+			} else {
+				path = req.getHeader("referer");
+				// referer : 이전페이지 url을 기억하고 있음
+				message = "게시글 삽입 실패..";
+				
+			}
+			
+			ra.addFlashAttribute("message", message);
+			
+			
+			return "redirect:" + path ;
+			
+		} else { // 수정 
+			
+			int result = service.updateBoard(detail, imageList, webPath, folderPath, deleteList);
+			
+			String path = null;
+			String message = null;
+			
+			if(result > 0) {
+				// 현재 : /board/write/{boardCode}
+				// /board/detail/1/{boardCode}/{boardNo}?cp=10
+				
+				path = "../detail/" + boardCode + "/" + detail.getBoardNo() + "?cp=" + cp;
+				message = "게시글이 수정되었습니다.";
+				
+			} else {
+				path = req.getHeader("referer");
+				message = "게시글 수정 실패..";
+				
+			}
+			
+			ra.addFlashAttribute("message", message);
+			
+			
+			return "redirect:" + path ;
+			
+			
+		}
+		
+		
+	}
 	// 게시글 삭제
 	
 	

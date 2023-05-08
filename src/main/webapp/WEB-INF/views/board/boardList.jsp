@@ -94,6 +94,7 @@
                                         <td>${board.memberNickname}</td>
                                         <td>${board.createDate}</td>
                                         <td>${board.readCount}</td>
+                                    
                                     </tr>
                                 </c:forEach>
 
@@ -108,7 +109,7 @@
 
                 <c:if test="${!empty loginMember}">
                     <!-- /community/board/write -->
-                    <button id="insertBtn" onclick="location.href='write?mode=insert&type=${param.type}&cp=${param.cp}'">글쓰기</button>                     
+                    <button id="insertBtn" onclick="location.href='../write/${boardCode}?mode=insert&cp=${pagination.currentPage}'">글쓰기</button>                     
                 </c:if>
 
             </div>

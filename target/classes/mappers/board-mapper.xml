@@ -134,8 +134,106 @@
 	    WHERE BOARD_NO = #{boardNo}
 	</update> 
  	
+ 	<!-- 게시글 삽입 -->
  	
- 
- 
- 
+ 	
+ 	
+ 	<!-- 
+ 		useGeneratedKeys 속성 : DB 내부적으로 생성한 키(ex. 시퀀스)를 받는
+ 						JDBC getGeneratedKeys() 메서드를 사용하도록 설정한다.
+ 						
+ 		동적 SQL 중 <selectKey>
+ 		- <selectKey> : INSERT, UPDATE에 사용된 키(EX. 시퀀스)를 원하는 변수/필드에 담아 반환하는 태그
+ 		- keyProperty : Key를 담을 변수/필드 지정하는 속성
+ 		- order : INSERT/UPDATE에 작성된 메인 SQL이 수행되기 전(BEFORE) 또는 후(AFTER)에
+ 				<selectKey> 내부에 SQL이 수행되도록 순서를 지정하는 속성
+ 				BEFORE 이니까 INSERT 먼저 SELECTKEY 그 다음
+ 	 -->
+ 	
+ 	<insert id ="insertBoard" parameterType="detail" useGeneratedKeys="true" >
+ 	
+ 	 <selectKey keyProperty="boardNo" resultType="_int" order="BEFORE">
+ 	 	SELECT SEQ_BOARD_NO.NEXTVAL FROM DUAL
+ 	 </selectKey>
+ 		
+ 		INSERT INTO BOARD VALUES( 
+			#{boardNo}, #{boardTitle}, #{boardContent}, 
+			DEFAULT, DEFAULT, DEFAULT, DEFAULT, #{memberNo}, #{boardCode}
+		)
+ 		
+ 	</insert>
+ 	
+ 	<!-- 게시글 이미지 삽입(리스트) -->
+ 	
+ 	<!-- 동적 SQL중 <foreach> 
+ 		- 특정 SQL 구문을 반복 사용할 때 사용
+ 		- 반복되는 사이에 구분자(separator) 추가 가능
+ 		
+ 		collection : 반복할 객체의 타입 작성(list, set, map ...)
+ 		item : collection에서 순차적으로 꺼낸 하나의 요소를 저장하는 변수
+ 		index : 현재 반복 접근중인 인덱스(0,1,2,3,4...)
+ 		
+ 		open : 반복 전에 출력할 sql
+ 		close : 반복 종료 후에 출력할 sql
+ 		
+ 		separator : 반복 사이사이에 들어갈 구분자
+ 		
+ 	-->
+ 	
+ 	<insert id="insertBoardImageList" parameterType="list">
+ 	INSERT INTO BOARD_IMG 
+		SELECT SEQ_IMG_NO.NEXTVAL IMG_NO,  A.* FROM(
+		
+			<foreach collection="list"  item="img" separator="UNION ALL" >
+			    SELECT  #{img.imageReName}     IMG_RENAME, 
+			    		#{img.imageOriginal}   IMG_ORIGINAL,
+			        	#{img.imageLevel}      IMG_LEVEL, 
+			        	#{img.boardNo}         BOARD_NO
+			    FROM DUAL
+			</foreach>
+		) A
+ 	</insert>
+ 	
+ 	<!-- 게시글 수정 -->
+	<update id="updateBoard">
+		UPDATE BOARD SET
+		BOARD_TITLE = #{boardTitle},
+		BOARD_CONTENT = #{boardContent},
+		UPDATE_DT = SYSDATE
+		WHERE BOARD_NO = #{boardNo}
+	</update>
+ 	
+ 	<!-- 게시글 이미지 삭제 -->
+ 	<delete id="deleteBoardImage">
+ 		DELETE FROM BOARD_IMG
+ 		WHERE BOARD_NO = ${boardNo}
+ 		AND IMG_LEVEL IN ( ${deleteList} )
+
+ 	</delete>
+ 	
+ 	<!-- 게시글 이미지 1개 수정 -->
+	<update id="updateBoardImage">
+		UPDATE BOARD_IMG SET
+		IMG_RENAME = #{imageReName},
+		IMG_ORIGINAL = #{imageOriginal}
+		
+		WHERE BOARD_NO = #{boardNo}
+		AND IMG_LEVEL = #{imageLevel}
+	</update>
+	
+	
+	<!-- 게시글 이미지 1개 삽입 -->
+	<insert id="insertBoardImage">
+		INSERT INTO BOARD_IMG VALUES(
+		
+			SEQ_IMG_NO.NEXTVAL, 
+			#{imageReName}, 
+			#{imageOriginal},
+			#{imageLevel}, 
+			#{boardNo}
+		)
+	</insert>
+	
+ 	
+ 	
 </mapper>
