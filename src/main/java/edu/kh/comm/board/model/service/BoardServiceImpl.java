@@ -21,10 +21,7 @@ import edu.kh.comm.board.model.vo.BoardType;
 import edu.kh.comm.board.model.vo.Pagination;
 import edu.kh.comm.common.Util;
 
-/**
- * @author user2
- *
- */
+
 @Service
 public class BoardServiceImpl implements BoardService{
 	
@@ -55,7 +52,7 @@ public class BoardServiceImpl implements BoardService{
 			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("pagination", pagination);
 			map.put("boardList", boardList);
-			map.put("boardCode", boardCode);
+			
 			
 			return map;
 		}

@@ -17,7 +17,7 @@ public class ReplyServiceImpl implements ReplyService{
 	@Override
 	public List<Reply> selectReplyList(int boardNo) {
 		
-		return null;
+		return dao.selectReplyList(boardNo);
 	}
 	
 	

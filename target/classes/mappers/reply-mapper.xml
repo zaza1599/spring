@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ReplyMapper">
+ 	
+ 	<resultMap type="reply" id="reply_rm">
+ 		<id property="replyNo" column="REPLY_NO"/>
+ 		
+ 		<result property="replyContentt" 		column="REPLY_CONTENT"/>
+		<result property="createDate" 		column="CREATE_DT"/>
+		<result property="boardNo" 			column="BOARD_NO"/>
+		<result property="memberNo" 		column="MEMBER_NO"/>
+		<result property="parentReplyNo" 	column="PARENT_RELPY_NO"/>
+ 	
+ 	</resultMap>
+ 	
+ 	<select id="selectReplyList" >
+        SELECT *
+        FROM REPLY_S
+        WHERE REPLY_NO = #{boardNo}
+    </select>
+ 	
+  
+</mapper>

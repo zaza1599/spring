@@ -309,7 +309,7 @@ public class BoardController {
 			
 			if(result > 0) {
 				// 현재 : /board/write/{boardCode}
-				// /board/detail/1/{boardCode}/{boardNo}?cp=10
+				// 목표 : /board/detail/1/{boardCode}/{boardNo}?cp=10
 				
 				path = "../detail/" + boardCode + "/" + detail.getBoardNo() + "?cp=" + cp;
 				message = "게시글이 수정되었습니다.";
