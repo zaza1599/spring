@@ -14,6 +14,7 @@ public class ReplyServiceImpl implements ReplyService{
 	@Autowired
 	private ReplyDAO dao;
 
+	// 댓글 목록 조회 서비스 구현
 	@Override
 	public List<Reply> selectReplyList(int boardNo) {
 		

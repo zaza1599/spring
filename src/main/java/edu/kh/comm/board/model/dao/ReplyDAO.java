@@ -14,8 +14,12 @@ public class ReplyDAO {
 	@Autowired
 	private SqlSessionTemplate sqlSession;
 
+	/** 댓글 목록 조회 서비스 DAO
+	 * @param boardNo
+	 * @return rList
+	 */
 	public List<Reply> selectReplyList(int boardNo) {
 		
-		return sqlSession.selectList("replyMapper");
+		return sqlSession.selectList("replyMapper.selectReplyList", boardNo);
 	}
 }

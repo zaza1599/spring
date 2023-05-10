@@ -1,5 +1,6 @@
 package edu.kh.comm.board.model.controller;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,13 +41,9 @@ public class ReplyController {
 	}
 	
 	// 댓글 등록
-	public String insertReply (@PathVariable("boardCode") int boardNo,
-								@ModelAttribute("loginMember") Member loginMember,
-								
-								
-			) {
+	
 		
-	}
+	
 	// 댓글 삭제
 	
 	// 댓글 수정
